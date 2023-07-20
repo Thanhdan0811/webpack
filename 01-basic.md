@@ -29,4 +29,35 @@ module.exports = {
 - AMD (define / require)
 - @Import scss/css
 - Image URL reference
-- 
+
+## ES6 Import/Export
+- Need webpack to bundle or import/export file js with run command.
+
+```
+/// fumctions/add.js
+const add = (a,b) => {
+  return a + b;
+}
+export default add;
+
+/// functions/subtract.js
+const substract = (a,b) => {
+  return a - b;
+}
+export default substract;
+
+/// functions/index.js
+import add from "./add";
+import substract from "./substract";
+
+export {add, substract};
+
+/// main.js
+import * as func from "./functions";
+
+console.log(func.add(2,3));
+
+=> npx webpack --config webpack.config.js --mode development /// Tạo file webpack.config.js thiết lập như trên.
+=> node dist/bundle.js
+
+```
