@@ -1,0 +1,90 @@
+# Code Splitting.
+- Create a bundle to store code that be used in multiple file , therefore dont have to import multiple.
+
+# Analyzer
+- npm i --save-dev webpack-bundle-analyzer
+
+
+```
+const path = require("path");
+const HtmlWebpackPlugin = require("html-webpack-plugin");
+const CopyPlugin = require("copy-webpack-plugin");
+const { BundleAnalyzerPlugin } = require("webpack-bundle-analyzer");
+
+
+module.exports = {
+  entry: {
+    index: "./src/index.js",
+    courses: "./src/pages/courses.js",
+  },
+  output: {
+    filename: "[name].[contenthash].js", // add version to name.
+    path: path.resolve(__dirname, "dist"),
+    clean: true,
+  },
+  devServer: {
+    static: "./dist",
+  },
+  module: {
+    rules: [
+      {
+        test: /\.css$/,
+        use: ["style-loader", "css-loader"],
+      },
+      {
+        test: /\.s[ac]ss$/,
+        use: ["style-loader", "css-loader", "sass-loader"],
+      },
+      {
+        test: /\.(png|jpeg|jpg|gif)$/,
+        type: "asset/resource",
+      },
+    ],
+  },
+  plugins: [
+    new HtmlWebpackPlugin({
+      template: "./src/index.html",
+      chunks: ["index"],
+      filename: "index.html",
+    }),
+    new HtmlWebpackPlugin({
+      template: "./src/pages/courses.html",
+      chunks: ["courses"],
+      filename: "courses.html",
+      base: "pages"
+    }),
+    new CopyPlugin({
+      patterns: [
+        {
+          from: path.resolve(__dirname, "src/assets/images/*"),
+          to: path.resolve(__dirname, "dist"),
+          context: "src",
+        }        
+      ],
+    }),
+    new BundleAnalyzerPlugin({}), // view optimazation file.
+  ],
+  optimazation: {
+    splitChunks: {
+      chunks: "all", // bundles need to split.
+      
+    }
+  }
+};
+
+
+```
+
+# Lazy load module
+```
+$("#pricing-plan").on("click", function () {
+  import(/* webpackChunkName: "modal" */ "./components/modal").then(
+    (module) => {
+      const showModal = module.default;
+      showModal();
+      $("#myModal").css("display", "block");
+    }
+  );
+});
+
+```
